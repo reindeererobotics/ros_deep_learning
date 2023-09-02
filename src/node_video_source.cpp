@@ -19,43 +19,43 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
+// https://jobs.telusinternational.com/en_US/careers/PipelineDetaiVOnline-Data-Analyst-Canada/21417?source-main_website
 #include "ros_compat.h"
 #include "image_converter.h"
 
+#include "image_transport/image_transport.hpp"
+
 #include <jetson-utils/videoSource.h>
 
-
-
-// globals	
-videoSource* stream = NULL;
-imageConverter* image_cvt = NULL;
+// globals
+videoSource *stream = NULL;
+imageConverter *image_cvt = NULL;
 Publisher<sensor_msgs::Image> image_pub = NULL;
-
+image_transport::Publisher pub ;
 
 // aquire and publish camera frame
 bool aquireFrame()
 {
-	imageConverter::PixelType* nextFrame = NULL;
+	imageConverter::PixelType *nextFrame = NULL;
 
 	// get the latest frame
-	if( !stream->Capture(&nextFrame, 1000) )
+	if (!stream->Capture(&nextFrame, 1000))
 	{
 		ROS_ERROR("failed to capture next frame");
 		return false;
 	}
 
 	// assure correct image size
-	if( !image_cvt->Resize(stream->GetWidth(), stream->GetHeight(), imageConverter::ROSOutputFormat) )
+	if (!image_cvt->Resize(stream->GetWidth(), stream->GetHeight(), imageConverter::ROSOutputFormat))
 	{
 		ROS_ERROR("failed to resize camera image converter");
 		return false;
 	}
 
 	// populate the message
-	sensor_msgs::Image msg;
+	sensor_msgs::msg::Image msg;
 
-	if( !image_cvt->Convert(msg, imageConverter::ROSOutputFormat, nextFrame) )
+	if (!image_cvt->Convert(msg, imageConverter::ROSOutputFormat, nextFrame))
 	{
 		ROS_ERROR("failed to convert video stream frame to sensor_msgs::Image");
 		return false;
@@ -66,11 +66,15 @@ bool aquireFrame()
 
 	// publish the message
 	image_pub->publish(msg);
+	
+	// Publish to image_transport
+	pub.publish(msg);
+
+
 	ROS_DEBUG("published %ux%u video frame", stream->GetWidth(), stream->GetHeight());
 	
 	return true;
 }
-
 
 // node main loop
 int main(int argc, char **argv)
@@ -88,13 +92,13 @@ int main(int argc, char **argv)
 	std::string resource_str;
 	std::string codec_str;
 	std::string flip_str;
-	
+
 	int video_width = video_options.width;
 	int video_height = video_options.height;
-	int latency = video_options.latency;
-	
+	int latency = video_options.rtspLatency;
+
 	ROS_DECLARE_PARAMETER("resource", resource_str);
-	ROS_DECLARE_PARAMETER("codec", codec_str);
+	ROS_DECLARE_PARAMETER("codec", "h264");
 	ROS_DECLARE_PARAMETER("width", video_width);
 	ROS_DECLARE_PARAMETER("height", video_height);
 	ROS_DECLARE_PARAMETER("framerate", video_options.frameRate);
@@ -128,8 +132,8 @@ int main(int argc, char **argv)
 	
 	video_options.width = video_width;
 	video_options.height = video_height;
-	video_options.latency = latency;
-	
+	video_options.rtspLatency = latency;
+
 	ROS_INFO("opening video source: %s", resource_str.c_str());
 
 	/*
@@ -143,7 +147,6 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
-
 	/*
 	 * create image converter
 	 */
@@ -155,12 +158,14 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
-
+	rclcpp::QoS image_qos(rclcpp::KeepLast(10), rmw_qos_profile_sensor_data);
 	/*
 	 * advertise publisher topics
 	 */
 	ROS_CREATE_PUBLISHER(sensor_msgs::Image, "raw", 2, image_pub);
 
+	image_transport::ImageTransport it(node);
+	pub = it.advertise("camera/image", 10);
 
 	/*
 	 * start the camera streaming
@@ -170,7 +175,6 @@ int main(int argc, char **argv)
 		ROS_ERROR("failed to start streaming video source");
 		return 0;
 	}
-
 
 	/*
 	 * start publishing video frames
@@ -190,7 +194,6 @@ int main(int argc, char **argv)
 			ROS_SPIN_ONCE();
 	}
 
-
 	/*
 	 * free resources
 	 */
@@ -199,4 +202,3 @@ int main(int argc, char **argv)
 
 	return 0;
 }
-

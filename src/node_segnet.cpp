@@ -229,7 +229,7 @@ int main(int argc, char **argv)
 	else
 	{
 		// create network using the built-in model
-		net = segNet::Create(model_name.c_str());
+		net = segNet::Create();
 	}
 
 	if( !net )

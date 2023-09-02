@@ -233,7 +233,7 @@ int main(int argc, char **argv)
 	else
 	{
 		// create network using the built-in model
-		net = detectNet::Create(model_name.c_str());
+		net = detectNet::Create();
 	}
 
 	if( !net )
@@ -321,4 +321,3 @@ int main(int argc, char **argv)
 
 	return 0;
 }
-

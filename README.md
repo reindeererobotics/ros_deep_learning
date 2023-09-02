@@ -136,6 +136,15 @@ $ roscore
 
 If you're using ROS2, running the core service is no longer required.
 
+### Launching Nodes (dasher_ros)
+
+Use the following snippet to build and launch the cameras. Note: we are assuming that you are in the docker container `ros_workspace` directory (`cd /jetson-inference/ros/`).
+
+```sh
+# launches 2 cameras and sets the domain id to 4. Defaults are 2 cameras and domain id 3 respectively
+source launch.sh -n 2 -d 0
+```
+
 ### Video Viewer
 
 First, it's recommended to test that you can stream a video feed using the [`video_source`](#video-source-node) and [`video_output`](#video-output-node) nodes.  See [Camera Streaming & Multimedia](https://github.com/dusty-nv/jetson-inference/blob/master/docs/aux-streaming.md) for valid input/output streams, and substitute your desired `input` and `output` argument below.  For example, you can use video files for the input or output, or use V4L2 cameras instead of MIPI CSI cameras.  You can also use RTP/RTSP streams over the network.

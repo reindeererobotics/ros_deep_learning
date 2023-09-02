@@ -1,1 +1,4 @@
 package.xml
+build/
+install/
+log/

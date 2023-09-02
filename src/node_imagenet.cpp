@@ -196,7 +196,7 @@ int main(int argc, char **argv)
 	else
 	{
 		// create network using the built-in model
-		net = imageNet::Create(model_name.c_str());
+		net = imageNet::Create();
 	}
 
 	if( !net )
