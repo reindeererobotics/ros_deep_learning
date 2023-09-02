@@ -142,7 +142,7 @@ Use the following snippet to build and launch the cameras. Note: we are assuming
 
 ```sh
 # launches 2 cameras and sets the domain id to 4. Defaults are 2 cameras and domain id 3 respectively
-source launch.sh -n 2 -d 0
+source /scripts/launch.sh -n 2 -d 0
 ```
 
 ### Video Viewer
