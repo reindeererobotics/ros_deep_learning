@@ -19,7 +19,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-// https://jobs.telusinternational.com/en_US/careers/PipelineDetaiVOnline-Data-Analyst-Canada/21417?source-main_website
+
 #include "ros_compat.h"
 #include "image_converter.h"
 
@@ -66,13 +66,12 @@ bool aquireFrame()
 
 	// publish the message
 	image_pub->publish(msg);
-	
+
 	// Publish to image_transport
 	pub.publish(msg);
 
-
 	ROS_DEBUG("published %ux%u video frame", stream->GetWidth(), stream->GetHeight());
-	
+
 	return true;
 }
 
@@ -92,6 +91,7 @@ int main(int argc, char **argv)
 	std::string resource_str;
 	std::string codec_str;
 	std::string flip_str;
+	// std::string topic_str;
 
 	int video_width = video_options.width;
 	int video_height = video_options.height;
@@ -165,7 +165,7 @@ int main(int argc, char **argv)
 	ROS_CREATE_PUBLISHER(sensor_msgs::Image, "raw", 2, image_pub);
 
 	image_transport::ImageTransport it(node);
-	pub = it.advertise("camera/image", 10);
+	pub = it.advertise("camera/image", 1);
 
 	/*
 	 * start the camera streaming

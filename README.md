@@ -32,12 +32,12 @@ Various distribution of ROS are supported either from source or through containe
 
 ## Installation
 
-The easiest way to get up and running is by cloning [jetson-inference](https://github.com/dusty-nv/jetson-inference) (which ros_deep_learning is a submodule of) and running the pre-built container, which automatically mounts the required model directories and devices:
+The easiest way to get up and running is by cloning [jetson-inference](https://github.com/reindeererobotics/jetson-inference.git) (which ros_deep_learning is a submodule of) and running the pre-built container, which automatically mounts the required model directories and devices:
 
 ``` bash
-$ git clone --recursive --depth=1 https://github.com/dusty-nv/jetson-inference
+$ git clone --recursive --depth=1 https://github.com/reindeererobotics/jetson-inference.git
 $ cd jetson-inference
-$ docker/run.sh --ros=humble  # noetic, foxy, galactic, humble, iron
+$ docker/run.sh --ros=foxy  # noetic, foxy, galactic, humble, iron
 ```
 
 > **note**: the ros_deep_learning nodes rely on data from the jetson-inference tree for storing models, so clone and mount `jetson-inference/data` if you're using your own container or source installation method.
@@ -142,7 +142,10 @@ Use the following snippet to build and launch the cameras. Note: we are assuming
 
 ```sh
 # launches 2 cameras and sets the domain id to 4. Defaults are 2 cameras and domain id 3 respectively
-source /scripts/launch.sh -n 2 -d 0
+source /scripts/launch.sh -a -d 0
+
+# Launching individual csi cameras. The commands below will launch csi cameras 1, 2, 4, & 5. i.e. /dev/video0, /dev/video1, /dev/video4, & /dev/video5
+ros2 launch ros_deep_learning dasher_nx.launch.py cam0:=0 cam1:=1 cam4:=4 cam5:=5
 ```
 
 ### Video Viewer
