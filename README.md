@@ -17,18 +17,27 @@ Various distribution of ROS are supported either from source or through containe
 
 ### Table of Contents
 
-* [Installation](#installation)
-* [Testing](#testing)
-	* [Video Viewer](#video-viewer)
-	* [imagenet Node](#imagenet-node)
-	* [detectnet Node](#detectnet-node)
-	* [segnet Node](#segnet-node)
-* [Topics & Parameters](#topics-messages)
-	* [imagenet Node](#imagenet-node-1)
-	* [detectnet Node](#detectnet-node-1)
-	* [segnet Node](#segnet-node-1) 
-	* [video_source Node](#video_source-node)
-	* [video_output Node](#video_output-node)
+- [DNN Inference Nodes for ROS/ROS2](#dnn-inference-nodes-for-rosros2)
+		- [Table of Contents](#table-of-contents)
+	- [Installation](#installation)
+		- [jetson-inference](#jetson-inference)
+		- [ROS/ROS2](#rosros2)
+			- [ROS Melodic](#ros-melodic)
+			- [ROS Eloquent](#ros-eloquent)
+		- [ros\_deep\_learning](#ros_deep_learning)
+	- [Testing](#testing)
+		- [Launching Nodes (dasher\_ros)](#launching-nodes-dasher_ros)
+		- [Video Viewer](#video-viewer)
+		- [imagenet Node](#imagenet-node)
+		- [detectnet Node](#detectnet-node)
+			- [](#)
+		- [segnet Node](#segnet-node)
+	- [Topics \& Parameters](#topics--parameters)
+		- [imagenet Node](#imagenet-node-1)
+		- [detectnet Node](#detectnet-node-1)
+		- [segnet Node](#segnet-node-1)
+		- [video\_source Node](#video_source-node)
+		- [video\_output Node](#video_output-node)
 
 ## Installation
 
@@ -37,7 +46,7 @@ The easiest way to get up and running is by cloning [jetson-inference](https://g
 ``` bash
 $ git clone --recursive --depth=1 https://github.com/reindeererobotics/jetson-inference.git
 $ cd jetson-inference
-$ docker/run.sh --ros=foxy  # noetic, foxy, galactic, humble, iron
+$ docker/run.sh --dev --container=dustynv/ros:humble-pytorch-l4t-r35.3.1
 ```
 
 > **note**: the ros_deep_learning nodes rely on data from the jetson-inference tree for storing models, so clone and mount `jetson-inference/data` if you're using your own container or source installation method.
@@ -157,7 +166,9 @@ First, it's recommended to test that you can stream a video feed using the [`vid
 $ roslaunch ros_deep_learning video_viewer.ros1.launch input:=csi://0 output:=display://0
 
 # ROS2
-$ ros2 launch ros_deep_learning video_viewer.ros2.launch input:=csi://0 output:=display://0
+$ ros2 launch ros_deep_learning video-viewer.launch.py
+# with arguments. Defaults are cameras:=0,1,2,3,4,5 camera_height:=1080 camera_width:=1920
+$ ros2 launch ros_deep_learning video-viewer.launch.py cameras:=0,1,4,5 camera_height:=720 camera_width:=1280
 ```
 
 ### imagenet Node
